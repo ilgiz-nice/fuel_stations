@@ -8,8 +8,8 @@ use App\Fuel;
 
 class Import
 {
-    protected $orgs = 'orgs_*.csv';
-    protected $fuel = 'fuel_*.csv';
+    protected $orgs = 'orgs*.csv';
+    protected $fuel = 'fuel*.csv';
 
     public function __construct($orgs = NULL, $fuel = NULL)
     {
@@ -33,15 +33,18 @@ class Import
 
     public function import()
     {
-        //Поиск файлов
+        echo 'Поиск файлов по шаблону' . PHP_EOL;
         foreach (glob($this->orgs) as $filename) {
             $client = $filename;
+            echo 'Файл организаций найден ' . $client . PHP_EOL;
         }
         foreach (glob($this->fuel) as $filename) {
             $cardUses = $filename;
+            echo 'Файл использований карты найден ' . $cardUses . PHP_EOL;
         }
 
         //Обработка файла с организациями
+        echo 'Обработка организаций' . PHP_EOL;
         if (Log::isFileChanged('orgs', $client)) {
             $array = array();
             $header = NULL;
@@ -54,6 +57,9 @@ class Import
                 }
                 fclose($handle);
             }
+            else {
+                echo 'Файл не удалось открыть' . PHP_EOL;
+            }
             $count = 0;
             $list = NULL;
             foreach ($array as $a) {
@@ -61,12 +67,18 @@ class Import
                 if (!$row) {
                     $count += 1;
                     $list .= $a['name'];
-                    User::create(['name' => $a['name'], 'inn' => $a['inn'], 'password' => bcrypt($a['password'])]);
+                    User::create(['name' => $a['name'], 'inn' => $a['inn'], 'password' => bcrypt($a['password']), 'superUser' => 0]);
                 }
             }
+            echo 'Было добавлено ' . $count . ' записей' . PHP_EOL;
+            unlink($client);
+        }
+        else {
+            echo 'Новый записей не было найдено' . PHP_EOL;
         }
 
         //Обработка файла использований карты
+        echo 'Обработка использований карты' . PHP_EOL;
         if (Log::isFileChanged('fuel', $cardUses)) {
             $array = array();
             $header = NULL;
@@ -79,12 +91,20 @@ class Import
                 }
                 fclose($handle);
             }
+            else {
+                echo 'Файл не удалось открыть' . PHP_EOL;
+            }
             $count = 0;
             foreach ($array as $a) {
                 $count += 1;
                 //
                 Fuel::create(['org_id' => $a['org_id'], 'date' => $a['date'], 'station' => $a['station'], 'value' => $a['value'], 'car' => $a['car']]);
             }
+            echo 'Было добавлено ' . $count . ' записей' . PHP_EOL;
+            unlink($cardUses);
+        }
+        else {
+            echo 'Новый записей не было найдено' . PHP_EOL;
         }
     }
 }
