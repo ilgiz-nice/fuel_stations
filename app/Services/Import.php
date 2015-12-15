@@ -81,7 +81,7 @@ class Import
             echo 'Новых записей не было найдено' . PHP_EOL;
         }
 
-        /*//Обработка файла использований карты
+        //Обработка файла использований карты
         echo 'Обработка использований карты' . PHP_EOL;
         if (Log::isFileChanged('fuel', $cardUses)) {
             $array = array();
@@ -108,6 +108,6 @@ class Import
         }
         else {
             echo 'Новых записей не было найдено' . PHP_EOL;
-        }*/
+        }
     }
 }
