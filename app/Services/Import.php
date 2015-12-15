@@ -63,9 +63,15 @@ class Import
             $count = 0;
             foreach ($array as $a) {
                 $row = User::where('inn', $a[1])->first();
-                if (!$row) {
+                if (!$row)
+                {
                     $count += 1;
                     User::create(['name' => $a[0], 'inn' => $a[1], 'password' => bcrypt($a[2]), 'superUser' => 0]);
+                }
+                else
+                {
+                    $row->update(['password' => bcrypt($a[2])]);
+                    $row->save();
                 }
             }
             echo 'Было добавлено ' . $count . ' записей' . PHP_EOL;
@@ -75,7 +81,7 @@ class Import
             echo 'Новых записей не было найдено' . PHP_EOL;
         }
 
-        //Обработка файла использований карты
+        /*//Обработка файла использований карты
         echo 'Обработка использований карты' . PHP_EOL;
         if (Log::isFileChanged('fuel', $cardUses)) {
             $array = array();
@@ -102,6 +108,6 @@ class Import
         }
         else {
             echo 'Новых записей не было найдено' . PHP_EOL;
-        }
+        }*/
     }
 }
