@@ -53,7 +53,7 @@ class Import
                     if (!$header)
                         $header = $row;
                     else
-                        $array[] = array_combine($header, $row);
+                        $array[] = $row;
                 }
                 fclose($handle);
             }
@@ -61,20 +61,18 @@ class Import
                 echo 'Файл не удалось открыть' . PHP_EOL;
             }
             $count = 0;
-            $list = NULL;
             foreach ($array as $a) {
-                $row = User::where('inn', $a['inn'])->first();
+                $row = User::where('inn', $a[1])->first();
                 if (!$row) {
                     $count += 1;
-                    $list .= $a['name'];
-                    User::create(['name' => $a['name'], 'inn' => $a['inn'], 'password' => bcrypt($a['password']), 'superUser' => 0]);
+                    User::create(['name' => $a[0], 'inn' => $a[1], 'password' => bcrypt($a[2]), 'superUser' => 0]);
                 }
             }
             echo 'Было добавлено ' . $count . ' записей' . PHP_EOL;
             unlink($client);
         }
         else {
-            echo 'Новый записей не было найдено' . PHP_EOL;
+            echo 'Новых записей не было найдено' . PHP_EOL;
         }
 
         //Обработка файла использований карты
@@ -87,7 +85,7 @@ class Import
                     if (!$header)
                         $header = $row;
                     else
-                        $array[] = array_combine($header, $row);
+                        $array[] = $row;
                 }
                 fclose($handle);
             }
@@ -97,14 +95,13 @@ class Import
             $count = 0;
             foreach ($array as $a) {
                 $count += 1;
-                //
-                Fuel::create(['org_id' => $a['org_id'], 'date' => $a['date'], 'station' => $a['station'], 'value' => $a['value'], 'car' => $a['car']]);
+                Fuel::create(['org_id' => $a[0], 'date' => $a[1], 'station' => $a[2], 'value' => $a[3], 'car' => $a[4]]);
             }
             echo 'Было добавлено ' . $count . ' записей' . PHP_EOL;
             unlink($cardUses);
         }
         else {
-            echo 'Новый записей не было найдено' . PHP_EOL;
+            echo 'Новых записей не было найдено' . PHP_EOL;
         }
     }
 }

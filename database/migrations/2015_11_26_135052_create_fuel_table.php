@@ -14,14 +14,12 @@ class CreateFuelTable extends Migration
     {
         Schema::create('fuel', function (Blueprint $table) {
             $table->increments('id');
-            $table->integer('org_id')->unsigned();
+            $table->string('org_id');
             $table->date('date');
             $table->integer('station');
             $table->float('value');
             $table->string('car');
             $table->timestamps();
-
-            $table->foreign('org_id')->references('id')->on('users');
         });
     }
 
