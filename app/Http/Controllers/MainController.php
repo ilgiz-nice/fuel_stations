@@ -13,7 +13,8 @@ class MainController extends Controller
 {
     public function index()
     {
-        $array = Auth::user()->fuels;
+        $array = Fuel::where('org_id', Auth::user()->inn);
+        //$array = Auth::user()->fuels;
 
         return view('main.index', compact('array'));
     }
